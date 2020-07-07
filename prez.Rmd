@@ -1,0 +1,141 @@
+---
+title: "lmtp"
+subtitle: ""
+author: "Nick Williams"
+institute: "WCM Biostatistics Computing Club"
+date: "updated: `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+# Some Casual Causal Inference
+
+> Causal inference is, I believe, unambiguously about comparisons within people... All the statistics in the world on $p(x,y)$ in the population—data, model, theory, whatever—isn’t enough to answer questions about variation in $y$ within a person. It’s as if statistics is living on a flat surface, and causal inference is the third dimension... To put it another way, we reach the “third dimension” by considering within-person comparisons. All the between-person analysis in the world won’t take you to that third dimension, not without some strong assumptions... It just happens that in statistics we typically learn about causal inference for within-person treatments in the context of data that only allow between-person comparisons.
+- Andrew Gelman
+
+Causal inference can be broken up into two distinct phases: 
+
+1. Identification: the establishment of the theoretical plausibility to make causal claims from observational data
+2. Estimation: the hard math part
+
+---
+
+# Deterministic effects
+
+The most commonly used causal effects are *deterministic* causal effects
+
+i.e., the ATE is a static, deterministic effect and considers the hypothetical difference in a population mean outcome if a binary treatment was applied to **all** observations versus if it was applied to **no** observations
+
+For example, the difference in the risk of lung cancer if everyone in the population smoked compared to if no one in the population smoked.
+
+Could also consider a dynamic, deterministic effect where treatment is deterministically applied as a function of observation covariates. 
+
+---
+
+# Feasibility and Positivity
+
+Causal inference requires the positivity assumption. 
+
+> all observations have a greater than zero chance of experiencing the exposure levels
+
+Often violated with deterministic effects
+
+Practically, deterministic interventions are often unfeasible or impossible to implement. 
+
+As a solution, we can instead consider the effect of stochastic interventions
+
+---
+
+# Modified treatment policies
+
+Let's consider a stochastic intervention where the *observed* treatment value is modified by an analyst-defined function, $f_A$
+
+This intervention depends on the natural value of the exposure and can be formulated so as to avoid positivity violations 
+
+An important caveat of MTPs is that they are experimentally un-testable &#x2192; estimating the effect of a 5 mph speed reduction on a pitchers pitch on the probability of a batter hitting the ball would first require you to know what the natural pitch speed would be.
+
+MTPs can be expanded to also depend on observation covariates
+
+---
+
+# the lmtp package
+
+Install the **lmtp** package from [Github](https://github.com/nt-williams/lmtp):
+
+```{r eval=FALSE, tidy=FALSE}
+devtools::install_github("nt-williams/lmtp")
+```
+
+Originally developed to estimate the causal effects of longitudinal modified treatment policies
+
+We quickly realized, it generalizes to many of the most common causal problems
+
+---
+
+# Non-parametric
+
+The two main estimators provided by **lmtp** are considered *doubly-robust*
+
+For the sake of this presentation, the main benefit is that this allows us to use machine learning for estimation while maintaining valid statistical inference 🤘
+
+**lmtp** thus uses the **sl3** package to implement the Super Learner algorithm
+
+The Super Learner combines multiple individual models into an optimal convex combination
+
+If you want to learn more about the Super Learner, Kat Hoffman has a great introductory presentation available [here](https://github.com/hoffmakl/sl3-demo/blob/master/superlearning_slides_animated.pdf)
+
+---
+
+# Why lmtp
+
+So why should you use it over `ltmle`, `tmle`, `tmle3`, `MatchIt`, `WeightIt`, `ipw`, `gforRmula`? 
+
+Only package we know of that can estimate the effect of binary, categorical, and continuous exposures for static and dynamic deterministic interventions and modified treatment policies with missing outcomes while remaining completely non-parametric under one unified framework 🤯
+
+Large emphasis on user experience went into the design
+
+`lmtp::lmtp_sdr(data, trt, outcome, baseline, time_vary)` &#x2192; the analysts notation
+
+VS
+
+`ltmle::ltmle(data, Anodes, Cnodes, Lnodes, Ynodes)` &#x2192; equation notation
+
+Super Learner is implemented using *sl3* package which is much faster than the *SuperLearner* package
+
+---
+
+| Feature                         |    Status   |
+|---------------------------------|:-----------:|
+| Point treatment                 |   &check;   |
+| Longitudinal treatment          |   &check;   |
+| Modified treatment intervention |   &check;   |
+| Static intervention             |   &check;   |
+| Dynamic intervention            |   &check;   |
+| Continuous treatment            |   &check;   |
+| Binary treatment                |   &check;   |
+| Categorical treatment           |   &check;   |
+| Missingness in treatment        |             |
+| Continuous outcome              |   &check;   |
+| Binary outcome                  |   &check;   |
+| Censored outcome                |   &check;   |
+| Mediation                       |             |
+| Super learner                   |   &check;   |
+| Clustered data                  |   &check;   |
+| Parallel processing             |   &check;   |
+| Progress bars                   |   &check;   |
+
+---
+
+class: center, middle
+
+# Demo
+

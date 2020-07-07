@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>lmtp</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nick Williams" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# lmtp
+### Nick Williams
+### WCM Biostatistics Computing Club
+### updated: 2020-07-06
+
+---
+
+
+
+
+# Some Casual Causal Inference
+
+&gt; Causal inference is, I believe, unambiguously about comparisons within people... All the statistics in the world on `\(p(x,y)\)` in the population—data, model, theory, whatever—isn’t enough to answer questions about variation in `\(y\)` within a person. It’s as if statistics is living on a flat surface, and causal inference is the third dimension... To put it another way, we reach the “third dimension” by considering within-person comparisons. All the between-person analysis in the world won’t take you to that third dimension, not without some strong assumptions... It just happens that in statistics we typically learn about causal inference for within-person treatments in the context of data that only allow between-person comparisons.
+- Andrew Gelman
+
+Causal inference can be broken up into two distinct phases: 
+
+1. Identification: the establishment of the theoretical plausibility to make causal claims from observational data
+2. Estimation: the hard math part
+
+---
+
+# Deterministic effects
+
+The most commonly used causal effects are *deterministic* causal effects
+
+i.e., the ATE is a static, deterministic effect and considers the hypothetical difference in a population mean outcome if a binary treatment was applied to **all** observations versus if it was applied to **no** observations
+
+For example, the difference in the risk of lung cancer if everyone in the population smoked compared to if no one in the population smoked.
+
+Could also consider a dynamic, deterministic effect where treatment is deterministically applied as a function of observation covariates. 
+
+---
+
+# Feasibility and Positivity
+
+Causal inference requires the positivity assumption. 
+
+&gt; all observations have a greater than zero chance of experiencing the exposure levels
+
+Often violated with deterministic effects
+
+Practically, deterministic interventions are often unfeasible or impossible to implement. 
+
+As a solution, we can instead consider the effect of stochastic interventions
+
+---
+
+# Modified treatment policies
+
+Let's consider a stochastic intervention where the *observed* treatment value is modified by an analyst-defined function, `\(f_A\)`
+
+This intervention depends on the natural value of the exposure and can be formulated so as to avoid positivity violations 
+
+An important caveat of MTPs is that they are experimentally un-testable &amp;#x2192; estimating the effect of a 5 mph speed reduction on a pitchers pitch on the probability of a batter hitting the ball would first require you to know what the natural pitch speed would be.
+
+MTPs can be expanded to also depend on observation covariates
+
+---
+
+# the lmtp package
+
+Install the **lmtp** package from [Github](https://github.com/nt-williams/lmtp):
+
+
+```r
+devtools::install_github("nt-williams/lmtp")
+```
+
+Originally developed to estimate the causal effects of longitudinal modified treatment policies
+
+We quickly realized, it generalizes to many of the most common causal problems
+
+---
+
+# Non-parametric
+
+The two main estimators provided by **lmtp** are considered *doubly-robust*
+
+For the sake of this presentation, the main benefit is that this allows us to use machine learning for estimation while maintaining valid statistical inference 🤘
+
+**lmtp** thus uses the **sl3** package to implement the Super Learner algorithm
+
+The Super Learner combines multiple individual models into an optimal convex combination
+
+If you want to learn more about the Super Learner, Kat Hoffman has a great introductory presentation available [here](https://github.com/hoffmakl/sl3-demo/blob/master/superlearning_slides_animated.pdf)
+
+---
+
+# Why lmtp
+
+So why should you use it over `ltmle`, `tmle`, `tmle3`, `MatchIt`, `WeightIt`, `ipw`, `gforRmula`? 
+
+Only package we know of that can estimate the effect of binary, categorical, and continuous exposures for static and dynamic deterministic interventions and modified treatment policies with missing outcomes while remaining completely non-parametric under one unified framework 🤯
+
+Large emphasis on user experience went into the design
+
+`lmtp::lmtp_sdr(data, trt, outcome, baseline, time_vary)` &amp;#x2192; the analysts notation
+
+VS
+
+`ltmle::ltmle(data, Anodes, Cnodes, Lnodes, Ynodes)` &amp;#x2192; equation notation
+
+Super Learner is implemented using *sl3* package which is much faster than the *SuperLearner* package
+
+---
+
+| Feature                         |    Status   |
+|---------------------------------|:-----------:|
+| Point treatment                 |   &amp;check;   |
+| Longitudinal treatment          |   &amp;check;   |
+| Modified treatment intervention |   &amp;check;   |
+| Static intervention             |   &amp;check;   |
+| Dynamic intervention            |   &amp;check;   |
+| Continuous treatment            |   &amp;check;   |
+| Binary treatment                |   &amp;check;   |
+| Categorical treatment           |   &amp;check;   |
+| Missingness in treatment        |             |
+| Continuous outcome              |   &amp;check;   |
+| Binary outcome                  |   &amp;check;   |
+| Censored outcome                |   &amp;check;   |
+| Mediation                       |             |
+| Super learner                   |   &amp;check;   |
+| Clustered data                  |   &amp;check;   |
+| Parallel processing             |   &amp;check;   |
+| Progress bars                   |   &amp;check;   |
+
+---
+
+class: center, middle
+
+# Demo
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
