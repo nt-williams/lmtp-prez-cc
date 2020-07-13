@@ -45,10 +45,12 @@ plan(multiprocess)
 
 with_progress({
   psi.tmle <- lmtp_tmle(sim, trt, out, time_vary = tim, cens = cen, shift = NULL, 
-                        learners_outcome = lrnrs, learners_trt = lrnrs, folds = 2) # would normally set folds to 10
+                        learners_outcome = lrnrs, learners_trt = lrnrs, 
+                        folds = 2) # would normally set folds to 10
 })
 
 with_progress({
   psi.sdr <- lmtp_sdr(sim, trt, out, time_vary = tim, cens = cen, shift = NULL, 
-                      learners_outcome = lrnrs, learners_trt = lrnrs, folds = 2) # would normally set folds to 10
+                      learners_outcome = lrnrs, learners_trt = lrnrs, 
+                      folds = 2) # would normally set folds to 10
 })

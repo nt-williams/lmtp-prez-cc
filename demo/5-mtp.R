@@ -43,6 +43,9 @@ policy.num <- function(data, trt) {
   (data[[trt]] - 1) * (data[[trt]] - 1 >= 1) + data[[trt]] * (data[[trt]] - 1 < 1)
 }
 
+head(sim$A_1)
+head(policy.num(sim, "A_1"))
+
 plan(multiprocess)
 
 with_progress({
@@ -74,6 +77,9 @@ policy.ord <- function(data, trt) {
   }
   factor(unlist(out), levels = 0:5, ordered = T)
 }
+
+head(sim$A_1)
+head(policy.ord(sim, "A_1"))
 
 with_progress({
   psi.tmle.ord <- lmtp_tmle(sim, trt, out, time_vary = tim, cens = cen, shift = policy.ord, 

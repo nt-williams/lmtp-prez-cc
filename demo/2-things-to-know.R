@@ -11,6 +11,38 @@ library(sl3)
 library(future)
 library(progressr)
 
+# specifying covariates ---------------------------------------------------
+
+# In the lmtp framework, there are 5 types of variables: treatment, outcome, 
+# baseline, time-varying, and censoring. Treatment and outcome variables 
+# are self-explanatory, baseline variables are those that are observed pre-treatment 
+# allocation, don’t change (i.e., age at treatment assignment), and always are used 
+# for estimation at all time points, time-varying variables are variables that (you guessed it…) 
+# change over time, censoring nodes indicate if an observation is 
+# observed (or censored) at the next time-point.
+
+# How these nodes are specified depends on the specific data generating 
+# mechanism and should be pre-specified based on a conceptual model (i.e, a DAG). 
+# How these nodes are used by lmtp estimators is specified by what we call a node list. 
+# The analyst doesn’t explicitly create the node list themselves, but instead supplies 
+# the variables and the instructions on how to combine; this is done through the k parameter.
+# when in doubt, use k = Inf
+
+# let's consider a longitudinal study with 1 baseline confounder, W
+# 3 time-varying treatment nodes, A1, A2, A3
+# 3 time-varying confounders, L1, L2, L3, 
+# and an outcome at time 4, Y.
+a <- c("A1", "A2", "A3") # treatments are established using a vector ordered by time (same with censoring nodes)
+baseline <- c("W") # baseline confounders are established using a vector
+nodes <- list(c("L1"), # time-varying covariates are established using a LIST ordered by time
+              c("L2"), # this allows for multiple time-varying covariates at each time point
+              c("L3"))
+
+# we can make sure our specification is correct by checking create_node_list()
+create_node_list(a, 3, nodes, baseline = baseline, k = Inf)
+# by changing k we can adjust the 
+create_node_list(a, 3, nodes, baseline = baseline, k = 0) 
+
 # writing shift functions -------------------------------------------------
 
 # How do we communicate an intervention of interest to lmtp? 
@@ -62,7 +94,6 @@ lrnrs <- make_learner_stack(Lrnr_mean,
 # lmtp is setup to use parallel processing based on the future package
 # the simplest invocation of this is to use plan(multiprocess) before calling an 
 # lmtp estimator
-
 plan(multiprocess)
 
 # progress bars -----------------------------------------------------------

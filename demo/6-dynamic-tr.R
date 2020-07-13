@@ -37,21 +37,24 @@ lrnrs <- make_learner_stack(Lrnr_mean,
 # shift function for a dynamic treatment regime
 # lets estimate the population mean outcome under a dynamic treatment regime where
 # everyone is treated at time 1. At time 2, everyone of gender 1 is treated and 
-# only those of gender 0 are treated if their baseline BMI is greater than 30 at month 4. 
+# only those of gender 0 are treated if their BMI is greater than 30 at month 4. 
 policy.dyn <- function(data, trt) {
   purrr::map_dbl(1:nrow(data), function(x) {
     if (trt == "A1") 1
     else {
-      if (trt == "A2") {
-        if (data[["gender"]][x] == 1) 1
-        else {
-          if (data[["month4BMI"]][x] > 35) 1
-          else 0
-        }
+      if (data[["gender"]][x] == 1) 1
+      else {
+        if (data[["month4BMI"]][x] > 35) 1
+        else 0
       }
     }
   })
 }
+
+head(bmi$A1)
+head(policy.dyn(bmi, "A1"))
+head(bmi$A2)
+head(policy.dyn(bmi, "A2"))
 
 plan(multiprocess)
 

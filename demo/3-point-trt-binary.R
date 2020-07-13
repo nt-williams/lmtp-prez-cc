@@ -38,8 +38,13 @@ plan(multiprocess)
 
 # treatment specific mean (TSM) when everyone got the RHC
 with_progress({
-  psi.all.tmle <- lmtp_tmle(rhc, trt, out, cnf, shift = static_binary_on, 
-                            learners_outcome = lrnrs, learners_trt = lrnrs, 
+  psi.all.tmle <- lmtp_tmle(data = rhc, 
+                            trt = trt, 
+                            outcome = out, 
+                            baseline = cnf, 
+                            shift = static_binary_on, 
+                            learners_outcome = lrnrs, 
+                            learners_trt = lrnrs, 
                             folds = 2) # would normally set this to 10
 })
 
@@ -67,6 +72,6 @@ with_progress({
 lmtp_contrast(psi.all.tmle, ref = psi.none.tmle, type = "rr")
 lmtp_contrast(psi.all.sdr, ref = psi.none.sdr, type = "rr")
 
-# BONUS: need the results in a table
+# BONUS: need the results in a table?
 # lmtp already has a broom::tidy method
 tidy(psi.all.tmle)

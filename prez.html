@@ -15,7 +15,7 @@ class: center, middle, inverse, title-slide
 # lmtp
 ### Nick Williams
 ### WCM Biostatistics Computing Club
-### updated: 2020-07-06
+### updated: 2020-07-13
 
 ---
 
@@ -24,13 +24,24 @@ class: center, middle, inverse, title-slide
 
 # Some Casual Causal Inference
 
-&gt; Causal inference is, I believe, unambiguously about comparisons within people... All the statistics in the world on `\(p(x,y)\)` in the population—data, model, theory, whatever—isn’t enough to answer questions about variation in `\(y\)` within a person. It’s as if statistics is living on a flat surface, and causal inference is the third dimension... To put it another way, we reach the “third dimension” by considering within-person comparisons. All the between-person analysis in the world won’t take you to that third dimension, not without some strong assumptions... It just happens that in statistics we typically learn about causal inference for within-person treatments in the context of data that only allow between-person comparisons.
-- Andrew Gelman
+`\(X\)` is causally related to `\(Y\)` if an intervention on `\(X\)` has the potential to change `\(Y\)`
+
+Counterfactuals and potential outcomes: what would have happened, if contrary to the fact, we did something other than we did.
+
+`$$Y_1 - Y_0$$`
+
+The fundamental problem of causal inference is that we do not observe all potential outcomes--we only observe one
+
+Under untestable assumptions we can start to make claims about those potential outcomes
+
+Confounding... 
 
 Causal inference can be broken up into two distinct phases: 
 
 1. Identification: the establishment of the theoretical plausibility to make causal claims from observational data
-2. Estimation: the hard math part
+2. Estimation: the hard math part made easy by `lmtp`
+
+
 
 ---
 
@@ -56,19 +67,24 @@ Often violated with deterministic effects
 
 Practically, deterministic interventions are often unfeasible or impossible to implement. 
 
-As a solution, we can instead consider the effect of stochastic interventions
+As a solution, we can instead consider the effect of stochastic interventions: 
+
+&gt; We may consider stochastic interventions in two equivalent ways: (1) where the equation `\(f_A\)`, giving rise to `\(A\)`, is replaced by a probabilistic mechanism `\(g_{\delta}(A|W)\)` that differs from the original `\(g(A|W)\)`, or (2) where the observed value `\(A\)` is replaced by a new value `\(A_{d(A|W)}\)` based on applying a user-defined function `\(d(A,W)\)` to `\(A\)`
+- Hitchhikers Guide to the tlverse
 
 ---
 
 # Modified treatment policies
 
-Let's consider a stochastic intervention where the *observed* treatment value is modified by an analyst-defined function, `\(f_A\)`
+Let's consider a stochastic intervention where the *observed* treatment value is modified by an analyst-defined function, `\(d(A)\)` (situation 2 on the previous slide)
 
-This intervention depends on the natural value of the exposure and can be formulated so as to avoid positivity violations 
+This intervention depends on the natural value of the exposure and can be formulated so as to avoid positivity violations
+
+We will define it as a **modified treatment policy** (MTP) 
 
 An important caveat of MTPs is that they are experimentally un-testable &amp;#x2192; estimating the effect of a 5 mph speed reduction on a pitchers pitch on the probability of a batter hitting the ball would first require you to know what the natural pitch speed would be.
 
-MTPs can be expanded to also depend on observation covariates
+MTPs can be expanded to also depend on observation covariates: `\(d(A)\)` &amp;#x2192; `\(d(A,W)\)`
 
 ---
 
@@ -87,17 +103,51 @@ We quickly realized, it generalizes to many of the most common causal problems
 
 ---
 
-# Non-parametric
+# The estimators
+
+The package provides 2 main estimators: 
+
+- A targeted maximum likelihood estimator: `lmtp_tmle()`
+- An estimator based on doubly robust unbiased transformations: `lmtp_sdr()`
+
+Both estimators are considered multiply-robust 
+
+- Estimators will remain consistent under model mis-specification in certain circumstances and are efficient under no mis-specification
+- Allows for slower rates of converge in data-adaptive estimators (more on this later)
+
+Both based on the study of the efficient influence function
+
+---
+
+# Multiply-robust
+
+&lt;img src="bias-plot.png" width="7200" /&gt;
+
+---
+
+# Multiply-robust
+
+&lt;img src="coverage-plot.png" width="7200" /&gt;
+
+---
+
+# Machine learning
 
 The two main estimators provided by **lmtp** are considered *doubly-robust*
 
-For the sake of this presentation, the main benefit is that this allows us to use machine learning for estimation while maintaining valid statistical inference 🤘
+This allows us to use machine learning for estimation while maintaining valid statistical inference 🤘
 
 **lmtp** thus uses the **sl3** package to implement the Super Learner algorithm
 
 The Super Learner combines multiple individual models into an optimal convex combination
 
 If you want to learn more about the Super Learner, Kat Hoffman has a great introductory presentation available [here](https://github.com/hoffmakl/sl3-demo/blob/master/superlearning_slides_animated.pdf)
+
+---
+
+# Why lmtp
+
+&lt;img src="twitter-praise.png" width="90%" /&gt;
 
 ---
 

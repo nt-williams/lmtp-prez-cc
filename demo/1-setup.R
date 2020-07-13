@@ -7,8 +7,8 @@
 # We need to install the necessary packages to start
 # This also just includes packages used for the presentation
 # Packages on CRAN
-need <- c("devtools", "here", "progressr", "future")
+need <- c("devtools", "here", "progressr", "future", "purrr")
 install.packages(need)
 
 # github packages
-devtools::install_github("nt-williams/lmtp@devel")
+devtools::install_github("nt-williams/lmtp")
