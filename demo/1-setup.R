@@ -11,4 +11,5 @@ need <- c("devtools", "here", "progressr", "future", "purrr")
 install.packages(need)
 
 # github packages
-devtools::install_github("nt-williams/lmtp")
+remotes::install_github("nt-williams/lmtp")
+remotes::install_github("tlverse/sl3@devel")

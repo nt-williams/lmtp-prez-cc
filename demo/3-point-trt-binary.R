@@ -69,9 +69,9 @@ with_progress({
 
 # what if we want the causal relative risk? 
 # can use lmtp_contrast
-lmtp_contrast(psi.all.tmle, ref = psi.none.tmle, type = "rr")
+lmtp_contrast(psi.all.tmle, ref = psi.none.tmle)
 lmtp_contrast(psi.all.sdr, ref = psi.none.sdr, type = "rr")
 
-# BONUS: need the results in a table?
+# BONUS: need the results tidied?
 # lmtp already has a broom::tidy method
 tidy(psi.all.tmle)

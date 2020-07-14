@@ -71,7 +71,7 @@ with_progress({
                           learners_outcome = lrnrs, folds = 5)
 })
 
-# we can compare it to a static treatment regime
+# we can compare it to a static treatment regime where everyone gets the treatment
 with_progress({
   psi.tmle.stc <- lmtp_tmle(bmi, trt, out, bas, tim, shift = static_binary_on, 
                             outcome_type = "continuous", learners_trt = lrnrs, 
@@ -83,3 +83,24 @@ with_progress({
                           outcome_type = "continuous", learners_trt = lrnrs, 
                           learners_outcome = lrnrs, folds = 5)
 })
+
+# and where no one gets the treatmetn
+with_progress({
+  psi.tmle.off <- lmtp_tmle(bmi, trt, out, bas, tim, shift = static_binary_off, 
+                            outcome_type = "continuous", learners_trt = lrnrs, 
+                            learners_outcome = lrnrs, folds = 5)
+})
+
+with_progress({
+  psi.sdr.off <- lmtp_sdr(bmi, trt, out, bas, tim, shift = static_binary_off, 
+                          outcome_type = "continuous", learners_trt = lrnrs, 
+                          learners_outcome = lrnrs, folds = 5)
+})
+
+# lets now obtain casual contrasts
+# notice how we can compare multiple policies at once
+lmtp_contrast(psi.tmle.dyn, psi.tmle.off, ref = psi.tmle.stc)
+
+
+
+

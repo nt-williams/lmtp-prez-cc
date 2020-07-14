@@ -15,7 +15,7 @@ class: center, middle, inverse, title-slide
 # lmtp
 ### Nick Williams
 ### WCM Biostatistics Computing Club
-### updated: 2020-07-13
+### updated: 2020-07-14
 
 ---
 
@@ -41,13 +41,11 @@ Causal inference can be broken up into two distinct phases:
 1. Identification: the establishment of the theoretical plausibility to make causal claims from observational data
 2. Estimation: the hard math part made easy by `lmtp`
 
-
-
 ---
 
-# Deterministic effects
+# Deterministic interventions
 
-The most commonly used causal effects are *deterministic* causal effects
+The most commonly used causal effects are *deterministic* 
 
 i.e., the ATE is a static, deterministic effect and considers the hypothetical difference in a population mean outcome if a binary treatment was applied to **all** observations versus if it was applied to **no** observations
 
@@ -61,28 +59,28 @@ Could also consider a dynamic, deterministic effect where treatment is determini
 
 Causal inference requires the positivity assumption. 
 
-&gt; all observations have a greater than zero chance of experiencing the exposure levels
+&gt; all observations have a greater than zero chance of experiencing the intervention
 
 Often violated with deterministic effects
 
 Practically, deterministic interventions are often unfeasible or impossible to implement. 
 
-As a solution, we can instead consider the effect of stochastic interventions: 
+As a solution, we can instead consider the effect of stochastic intervention where an observed value `\(A\)` is replaced by a new value `\(A_{d(A|W)}\)` based on applying a user-defined function `\(d(A,W)\)` to `\(A\)`
 
-&gt; We may consider stochastic interventions in two equivalent ways: (1) where the equation `\(f_A\)`, giving rise to `\(A\)`, is replaced by a probabilistic mechanism `\(g_{\delta}(A|W)\)` that differs from the original `\(g(A|W)\)`, or (2) where the observed value `\(A\)` is replaced by a new value `\(A_{d(A|W)}\)` based on applying a user-defined function `\(d(A,W)\)` to `\(A\)`
-- Hitchhikers Guide to the tlverse
+&lt;!-- &gt; We may consider stochastic interventions in two equivalent ways: (1) where the equation `\(f_A\)`, giving rise to `\(A\)`, is replaced by a probabilistic mechanism `\(g_{\delta}(A|W)\)` that differs from the original `\(g(A|W)\)`, or (2) where the observed value `\(A\)` is replaced by a new value `\(A_{d(A|W)}\)` based on applying a user-defined function `\(d(A,W)\)` to `\(A\)` --&gt;
+&lt;!-- - Hitchhikers Guide to the tlverse --&gt;
 
 ---
 
 # Modified treatment policies
 
-Let's consider a stochastic intervention where the *observed* treatment value is modified by an analyst-defined function, `\(d(A)\)` (situation 2 on the previous slide)
+Motivating example: A researcher wants to know the effect of decreasing surgical operating times by 5 minutes on some outcome. It is likely that there is a global minimum operating time that surgery can successfully be completed within. We thus modify our intervention so that it respects the bounds of the data and avoids positivity violations. 
 
-This intervention depends on the natural value of the exposure and can be formulated so as to avoid positivity violations
+Now our intervention of interest is a decrease of 5 min in surgical operating time where such an intervention would be conceivably feasible
 
-We will define it as a **modified treatment policy** (MTP) 
+We will define it as a **modified treatment policy** (MTP). 
 
-An important caveat of MTPs is that they are experimentally un-testable &amp;#x2192; estimating the effect of a 5 mph speed reduction on a pitchers pitch on the probability of a batter hitting the ball would first require you to know what the natural pitch speed would be.
+An important caveat of MTPs is that they are experimentally un-testable &amp;#x2192; estimating the effect of a 5 min reduction on operating time would first require you to know what the original operating would have been for each surgery.
 
 MTPs can be expanded to also depend on observation covariates: `\(d(A)\)` &amp;#x2192; `\(d(A,W)\)`
 
@@ -99,7 +97,10 @@ devtools::install_github("nt-williams/lmtp")
 
 Originally developed to estimate the causal effects of longitudinal modified treatment policies
 
-We quickly realized, it generalizes to many of the most common causal problems
+It generalizes many of the most common causal problems, such as static interventions
+
+&lt;img src="lmtp.png" width="35%" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
@@ -117,17 +118,19 @@ Both estimators are considered multiply-robust
 
 Both based on the study of the efficient influence function
 
----
-
-# Multiply-robust
-
-&lt;img src="bias-plot.png" width="7200" /&gt;
+Also provide an IPW estimator and a G-computation estimator. We don't recommend their use.
 
 ---
 
 # Multiply-robust
 
-&lt;img src="coverage-plot.png" width="7200" /&gt;
+&lt;img src="bias-plot.png" width="864" /&gt;
+
+---
+
+# Multiply-robust
+
+&lt;img src="coverage-plot.png" width="864" /&gt;
 
 ---
 
@@ -137,7 +140,7 @@ The two main estimators provided by **lmtp** are considered *doubly-robust*
 
 This allows us to use machine learning for estimation while maintaining valid statistical inference 🤘
 
-**lmtp** thus uses the **sl3** package to implement the Super Learner algorithm
+**lmtp** uses the **sl3** package to implement the Super Learner algorithm
 
 The Super Learner combines multiple individual models into an optimal convex combination
 
@@ -165,7 +168,7 @@ VS
 
 `ltmle::ltmle(data, Anodes, Cnodes, Lnodes, Ynodes)` &amp;#x2192; equation notation
 
-Super Learner is implemented using *sl3* package which is much faster than the *SuperLearner* package
+Super Learner is implemented using the *sl3* package which is much faster than the *SuperLearner* package
 
 ---
 
